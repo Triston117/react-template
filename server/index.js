@@ -1,18 +1,28 @@
 import express from "express";
-import postgres from "postgres";
+import pkg from "pg";
 import dotenv from "dotenv";
 
 dotenv.config({ path: "../.env" });
 
 const PORT = process.env.PORT;
-const sql = postgres(process.env.DATABASE_URL);
+const { Pool } = pkg;
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
 const app = express();
 
 app.use(express.json());
 
 app.get("/api/tasks", (req, res) => {
-  sql`SELECT * FROM tasks`.then((rows) => {
-    res.send(rows);
+  pool.query("SELECT * FROM tasks", (error, result) => {
+    if (error) {
+      console.error("Error executing query:", error);
+      res.status(500).send("Internal Server Error");
+    } else {
+      res.send(result.rows);
+    }
   });
 });
 

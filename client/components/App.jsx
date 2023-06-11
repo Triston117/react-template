@@ -6,8 +6,11 @@ const App = () => {
   useEffect(() => {
     fetch("/api/tasks")
       .then((res) => res.json())
-      .then((tasks) => {
-        setTasks(tasks);
+      .then((data) => {
+        setTasks(data);
+      })
+      .catch((error) => {
+        console.error("ERROR", error);
       });
   }, []);
 

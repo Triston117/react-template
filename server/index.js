@@ -27,10 +27,11 @@ app.get("/api/tasks", (req, res) => {
 });
 
 app.post("/api/tasks", (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, dueDate } = req.body; // Add dueDate destructuring
+
   pool.query(
-    "INSERT INTO tasks (title, description) VALUES ($1, $2) RETURNING *",
-    [title, description],
+    "INSERT INTO tasks (title, description, due_date) VALUES ($1, $2, $3) RETURNING *",
+    [title, description, dueDate], // Include dueDate in the query parameters
     (error, result) => {
       if (error) {
         console.error("Error executing query:", error);
@@ -58,10 +59,11 @@ app.get("/api/tasks/:id", (req, res) => {
 
 app.put("/api/tasks/:id", (req, res) => {
   const taskId = req.params.id;
-  const { title, description } = req.body;
+  const { description } = req.body;
+
   pool.query(
-    "UPDATE tasks SET title = $1, description = $2 WHERE id = $3 RETURNING *",
-    [title, description, taskId],
+    "UPDATE tasks SET description = $1 WHERE id = $2 RETURNING *",
+    [description, taskId],
     (error, result) => {
       if (error) {
         console.error("Error executing query:", error);
@@ -75,6 +77,47 @@ app.put("/api/tasks/:id", (req, res) => {
   );
 });
 
+// Update task priority
+app.patch("/api/tasks/:id/priority", (req, res) => {
+  const taskId = req.params.id;
+  const { priority } = req.body;
+
+  pool.query(
+    "UPDATE tasks SET priority = $1 WHERE id = $2 RETURNING *",
+    [priority, taskId],
+    (error, result) => {
+      if (error) {
+        console.error("Error executing query:", error);
+        res.status(500).send("Internal Server Error");
+      } else if (result.rows.length === 0) {
+        res.status(404).send("Task not found");
+      } else {
+        res.send(result.rows[0]);
+      }
+    }
+  );
+});
+
+// Update task completion status
+app.patch("/api/tasks/:id/completion", (req, res) => {
+  const taskId = req.params.id;
+  const { completed } = req.body;
+
+  pool.query(
+    "UPDATE tasks SET completed = $1 WHERE id = $2 RETURNING *",
+    [completed, taskId],
+    (error, result) => {
+      if (error) {
+        console.error("Error executing query:", error);
+        res.status(500).send("Internal Server Error");
+      } else if (result.rows.length === 0) {
+        res.status(404).send("Task not found");
+      } else {
+        res.send(result.rows[0]);
+      }
+    }
+  );
+});
 app.delete("/api/tasks/:id", (req, res) => {
   const taskId = req.params.id;
   pool.query(

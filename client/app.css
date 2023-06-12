@@ -1,23 +1,68 @@
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 body {
-  margin: 0;
+  font-family: "Helvetica Neue", Arial, sans-serif; /* Set a calming font */
+  line-height: 1.6; /* Improve readability */
+  background-color: #f0f8ff; /* Light blue background */
 }
 
 .main {
-  padding: 8px;
+  max-width: 600px; /* Limit the width of the content for better readability */
+  margin: 0 auto; /* Center the content horizontally */
+  padding: 16px; /* Add some spacing around the content */
+  background-color: #ffffff; /* White content background */
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow effect */
+}
+
+.task-form input[type="text"],
+.task-form button,
+.task button {
+  border-radius: 4px; /* Add rounded corners to input and button elements */
+  padding: 8px 16px; /* Increase padding for better button appearance */
+  background-color: #ffffff; /* White background */
+  color: #333333; /* Dark text color */
 }
 
 .task {
-  display: flex;
-  align-items: center;
-  border: 1px solid black;
-  padding: 2px;
-  max-width: 200px;
+  border: 1px solid #dddddd; /* Light gray border */
+  background-color: #ffffff; /* White background */
+  animation: fadeIn 1s ease-in-out;
 }
 
-.task + .task {
-  margin-top: 4px;
+.task button:last-child {
+  background-color: #f44336; /* Red background */
 }
 
-.task > * + * {
-  margin-left: 4px;
+.loading,
+.error {
+  margin-top: 16px; /* Add spacing between loading/error messages and tasks */
+  color: #555555; /* Dark gray text color */
+}
+
+/* Animation */
+.task button:hover {
+  background-color: #3caea3; /* Light blue background on hover */
+}
+
+.loading {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
 }

@@ -3,8 +3,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaPlus, FaTrash, FaCheck } from "react-icons/fa";
 import "../app.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import RandomQuote from "./RandomQuote.jsx";
+import TaskForm from "./TaskForm.jsx";
+import Task from "./Task.jsx";
 
 const App = () => {
+  // State
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -13,7 +18,7 @@ const App = () => {
   const [quotes, setQuotes] = useState([]);
   const [randomQuote, setRandomQuote] = useState(null);
 
-  // Re render
+  // Initial data fetch and quote fetch
   useEffect(() => {
     fetchQuotes();
     setIsLoading(true);
@@ -30,6 +35,7 @@ const App = () => {
       });
   }, []);
 
+  // Fetch quotes from API
   const fetchQuotes = async () => {
     try {
       const response = await fetch("https://type.fit/api/quotes");
@@ -42,10 +48,12 @@ const App = () => {
     }
   };
 
+  // Handle new quote button click
   const handleNewQuote = () => {
     getNewQuote();
   };
 
+  // Get a new random quote
   const getNewQuote = () => {
     const colors = [
       "#808080",
@@ -60,6 +68,7 @@ const App = () => {
     setRandomQuote(quotes[randIndex]);
   };
 
+  // Get a random color
   const getRandomColor = () => {
     const colors = [
       "#FF0000",
@@ -73,19 +82,19 @@ const App = () => {
     return colors[randomIndex];
   };
 
-  // NEW TASK
-  const handleTaskCreate = () => {
-    if (!newTask) {
-      return;
+  // Create a new task
+  const handleTaskCreate = (newTask, dueDate) => {
+    setIsLoading(true);
+
+    let taskName = newTask;
+    if (dueDate) {
+      const formattedDate = new Date(dueDate).toLocaleDateString();
+      taskName += " " + formattedDate;
     }
 
-    setIsLoading(true);
-    const requestBody = {
-      description: newTask,
+    let requestBody = {
+      description: taskName,
     };
-    if (dueDate) {
-      requestBody.dueDate = dueDate.toISOString();
-    }
 
     fetch("/api/tasks", {
       method: "POST",
@@ -107,23 +116,21 @@ const App = () => {
         setIsLoading(false);
       });
   };
-  // DELETE TASK
-  const handleTaskDelete = (taskId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
-    if (!confirmed) {
-      return;
-    }
 
+  // Delete a task
+  const handleTaskDelete = (taskId) => {
     setIsLoading(true);
+
     fetch(`/api/tasks/${taskId}`, {
       method: "DELETE",
     })
-      .then((res) => res.json())
-      .then((data) => {
-        const updatedTasks = tasks.filter((task) => task.id !== data.id);
-        setTasks(updatedTasks);
+      .then((res) => {
+        if (res.ok) {
+          const updatedTasks = tasks.filter((task) => task.id !== taskId);
+          setTasks(updatedTasks);
+        } else {
+          setError("Failed to delete task");
+        }
         setIsLoading(false);
       })
       .catch((error) => {
@@ -133,184 +140,32 @@ const App = () => {
       });
   };
 
-  const handleTaskPriority = (taskId, priority) => {
-    setIsLoading(true);
-
-    // Determine the priority value based on the current state of 1 or 2
-    const priorityValue = priority ? 1 : 2;
-
-    fetch(`/api/tasks/${taskId}/priority`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        priority: priorityValue,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const updatedTasks = tasks.map((task) => {
-          if (task.id === data.id) {
-            return { ...task, priority: data.priority };
-          }
-          return task;
-        });
-
-        // Move the task to the top if the priority was changed to 1 which equals high
-        if (!priority) {
-          const taskIndex = updatedTasks.findIndex(
-            (task) => task.id === data.id
-          );
-          if (taskIndex !== -1) {
-            const [task] = updatedTasks.splice(taskIndex, 1);
-            task.priority = 1; // Set priority to high
-            updatedTasks.unshift(task);
-          }
-        }
-
-        setTasks(updatedTasks);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error("ERROR", error);
-        setError("Failed to update task priority");
-        setIsLoading(false);
-      });
-  };
-  // TASK COMPLETE, CSS LINE THROUGH
-  const handleTaskComplete = (taskId, completed) => {
-    setIsLoading(true);
-    fetch(`/api/tasks/${taskId}/completion`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        completed: completed,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const updatedTasks = tasks.map((task) => {
-          if (task.id === data.id) {
-            return { ...task, completed: data.completed };
-          }
-          return task;
-        });
-        setTasks(updatedTasks);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error("ERROR", error);
-        setError("Failed to update task completion status");
-        setIsLoading(false);
-      });
-  };
-  // UGH
-  const handleTaskDueDate = (taskId, dueDate) => {
-    setIsLoading(true);
-    fetch(`/api/tasks/${taskId}/dueDate`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        dueDate: dueDate ? dueDate.toISOString().split("T")[0] : null,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const updatedTasks = tasks.map((task) => {
-          if (task.id === data.id) {
-            return { ...task, dueDate: data.dueDate };
-          }
-          return task;
-        });
-        setTasks(updatedTasks);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error("ERROR", error);
-        setError("Failed to update task due date");
-        setIsLoading(false);
-      });
-
-    setDueDate(dueDate); // Update the dueDate state
-  };
-
   return (
-    <main>
-      {/* Render the random quote */}
-      {randomQuote && (
-        <div className="quote-container">
-          <div className="quote-text">{randomQuote.text}</div>
-          <div className="quote-author">{randomQuote.author}</div>
-        </div>
-      )}
-
-      {/* Button to get a new quote */}
-      <button onClick={handleNewQuote}>Get New Quote</button>
-      <div className="task-form">
-        <input
-          type="text"
-          value={newTask}
-          onChange={(e) => setNewTask(e.target.value)}
-          placeholder="Enter task description"
-        />
-        <div className="calendar">
-          <DatePicker
-            selected={dueDate}
-            onChange={(date) => setDueDate(date)}
-            placeholderText="Select due date"
-          />
-        </div>
-        <button onClick={handleTaskCreate}>Add Task</button>
-      </div>
-
-      {error && <div className="error">{error}</div>}
-
+    <div className="container">
+      <h1>Task Manager</h1>
+      <RandomQuote
+        quote={randomQuote}
+        onNewQuote={handleNewQuote}
+        color={getRandomColor()}
+      />
+      <TaskForm
+        newTask={newTask}
+        setNewTask={setNewTask}
+        dueDate={dueDate}
+        setDueDate={setDueDate}
+        onCreateTask={handleTaskCreate}
+      />
       {isLoading ? (
-        <div className="loading">Loading tasks...</div>
+        <p>Loading...</p>
       ) : (
-        tasks.map((task) => (
-          <div
-            className={`task ${task.completed ? "completed" : ""}`}
-            key={task.id}
-            style={{ "--random-color": task.color }}
-          >
-            <span className="task-description">{task.description}</span>{" "}
-            <span>Due: {task.dueDate ? `Due: ${task.dueDate}` : ""}</span>
-            <div>
-              <button
-                onClick={() => handleTaskPriority(task.id, !task.priority)}
-              >
-                {task.priority ? "Low Priority" : "High Priority"}
-              </button>
-              <button
-                onClick={() => handleTaskComplete(task.id, !task.completed)}
-              >
-                {task.completed ? "Mark Incomplete" : "Mark Complete"}
-              </button>
-              <DatePicker
-                selected={task.dueDate ? new Date(task.dueDate) : null}
-                onChange={(date) => handleTaskDueDate(task.id, date)}
-                placeholderText="Select due date"
-              />
-              <button
-                className="delete-button"
-                onClick={() => handleTaskDelete(task.id)}
-              >
-                Delete
-              </button>
-            </div>
-            <div className="floating-button" onClick={handleTaskCreate}>
-              <FaPlus />
-            </div>
-          </div>
-        ))
+        <div>
+          {tasks.map((task) => (
+            <Task key={task.id} task={task} onDeleteTask={handleTaskDelete} />
+          ))}
+        </div>
       )}
-    </main>
+      {error && <p>{error}</p>}
+    </div>
   );
 };
 

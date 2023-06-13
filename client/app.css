@@ -1,36 +1,45 @@
-/* Add background gradient */
 body {
-  background-image: linear-gradient(to bottom, #00b4db, #0083b0);
+  padding-top: 20px;
+  background-color: #343a40;
+  color: #ffffff;
 }
 
-.quote-container {
-  margin-bottom: 20px;
-}
-
-.task-form {
-  margin-bottom: 20px;
-}
-
-.task.completed {
-  background-color: #f7f7f7;
-}
-
-/* Customized task cards */
-.task {
-  border: 1px solid #dddddd;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.container {
   border-radius: 8px;
-  /* Add other customizations as desired */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  background-color: #212529;
+  color: #975656;
+  font-weight: bold;
 }
 
-/* Floating action button */
+.bg-dark.bg-gradient {
+  background-image: linear-gradient(to bottom, #343a40, #212529);
+}
+
+/* Add margin-bottom utility class */
+.mb-4 {
+  margin-bottom: 20px;
+}
+
+/* Add Bootstrap card class */
+.task {
+  border: 1px solid #c90f0f;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Add Bootstrap background utility class for completed tasks */
+.completed {
+  text-decoration: line-through;
+}
+
+/* Add Bootstrap utility classes for floating button */
 .floating-button {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #3caea3;
-  color: #ffffff;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -40,16 +49,15 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   transition: background-color 0.3s ease;
-}
-
-.completed .task-description {
-  text-decoration: line-through;
+  background-color: #3caea3;
+  color: #ffffff;
 }
 
 .floating-button:hover {
   background-color: #1d7f74;
 }
 
+/* Add Bootstrap danger button class for delete button */
 .delete-button {
   border: 1px solid transparent;
   background-color: red !important;
@@ -59,7 +67,7 @@ body {
   transition: border-color 0.3s ease;
 }
 
-/* Icons */
+/* Add Bootstrap utility classes for icons */
 .task button {
   background: none;
   border: none;
@@ -68,7 +76,7 @@ body {
   padding: 4px;
 }
 
-/* New Quote Button */
+/* Add Bootstrap primary button class for new quote button */
 button.new-quote-button {
   background-color: #f9a602;
   color: #ffffff;
@@ -78,27 +86,28 @@ button.new-quote-button {
   cursor: pointer;
 }
 
-/* Add space between button and task description */
+/* Add Bootstrap margin utility class for input */
 .task-form input[type="text"] {
   margin-top: 10px;
 }
 
-/* Loading message */
+/* Add Bootstrap italic class for loading message */
 .loading {
   font-style: italic;
   color: #777777;
 }
 
-/* Error message */
+/* Add Bootstrap danger class for error message */
 .error {
   color: red;
 }
 
-/* Quote container */
+/* Remove duplicate styles for .quote-container */
 .quote-container {
   margin-bottom: 20px;
 }
 
+/* Add Bootstrap typography classes for quote text and author */
 .quote-text {
   font-size: 20px;
   font-weight: bold;
@@ -109,12 +118,12 @@ button.new-quote-button {
   margin-top: 5px;
 }
 
-/* Calendar container */
+/* Add Bootstrap margin utility class for calendar container */
 .calendar {
   margin-top: 10px;
 }
 
-/* Task due date */
+/* Add Bootstrap text-primary class for task due date */
 .task span {
   display: block;
   font-size: 20px;
@@ -122,19 +131,13 @@ button.new-quote-button {
   color: var(--random-color);
 }
 
-/* Task priority button */
+/* Add Bootstrap margin utility classes for task buttons */
 .task button {
   margin-right: 5px;
   margin-bottom: 5px;
 }
 
-/* Task delete button */
+/* Add Bootstrap margin utility class for task delete button */
 .task .delete-button {
   margin-top: 10px;
-}
-
-/* Loading message */
-.loading {
-  font-style: italic;
-  color: #777777;
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaPlus, FaTrash, FaCheck } from "react-icons/fa";
@@ -7,9 +7,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import RandomQuote from "./RandomQuote.jsx";
 import TaskForm from "./TaskForm.jsx";
 import Task from "./Task.jsx";
+import YouTube from "react-youtube";
 
 const App = () => {
-  // State
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +18,6 @@ const App = () => {
   const [quotes, setQuotes] = useState([]);
   const [randomQuote, setRandomQuote] = useState(null);
 
-  // Initial data fetch and quote fetch
   useEffect(() => {
     fetchQuotes();
     setIsLoading(true);
@@ -35,7 +34,6 @@ const App = () => {
       });
   }, []);
 
-  // Fetch quotes from API
   const fetchQuotes = async () => {
     try {
       const response = await fetch("https://type.fit/api/quotes");
@@ -48,12 +46,10 @@ const App = () => {
     }
   };
 
-  // Handle new quote button click
   const handleNewQuote = () => {
     getNewQuote();
   };
 
-  // Get a new random quote
   const getNewQuote = () => {
     const colors = [
       "#808080",
@@ -68,7 +64,6 @@ const App = () => {
     setRandomQuote(quotes[randIndex]);
   };
 
-  // Get a random color
   const getRandomColor = () => {
     const colors = [
       "#FF0000",
@@ -82,7 +77,6 @@ const App = () => {
     return colors[randomIndex];
   };
 
-  // Create a new task
   const handleTaskCreate = (newTask, dueDate) => {
     setIsLoading(true);
 
@@ -117,7 +111,6 @@ const App = () => {
       });
   };
 
-  // Delete a task
   const handleTaskDelete = (taskId) => {
     setIsLoading(true);
 
@@ -138,6 +131,11 @@ const App = () => {
         setError("Failed to delete task");
         setIsLoading(false);
       });
+  };
+
+  const handlePlayMusic = () => {
+    const audioElement = document.getElementById("audio-element");
+    audioElement.play();
   };
 
   return (
@@ -165,6 +163,13 @@ const App = () => {
         </div>
       )}
       {error && <p>{error}</p>}
+      <button className="btn btn-primary" onClick={handlePlayMusic}>
+        Play Ambient Music
+      </button>
+      <audio
+        id="audio-element"
+        src="https://www.youtube.com/watch?v=nRe3xFeyhVY"
+      />
     </div>
   );
 };

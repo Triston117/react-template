@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaPlus, FaTrash, FaCheck } from "react-icons/fa";
+import "../app.css";
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
@@ -9,8 +10,12 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [dueDate, setDueDate] = useState(null);
+  const [quotes, setQuotes] = useState([]);
+  const [randomQuote, setRandomQuote] = useState(null);
+
   // Re render
   useEffect(() => {
+    fetchQuotes();
     setIsLoading(true);
     fetch("/api/tasks")
       .then((res) => res.json())
@@ -24,6 +29,50 @@ const App = () => {
         setIsLoading(false);
       });
   }, []);
+
+  const fetchQuotes = async () => {
+    try {
+      const response = await fetch("https://type.fit/api/quotes");
+      const data = await response.json();
+      setQuotes(data);
+      let randIndex = Math.floor(Math.random() * data.length);
+      setRandomQuote(data[randIndex]);
+    } catch (error) {
+      console.error("Failed to fetch quotes:", error);
+    }
+  };
+
+  const handleNewQuote = () => {
+    getNewQuote();
+  };
+
+  const getNewQuote = () => {
+    const colors = [
+      "#808080",
+      "#A9A9A9",
+      "#696969",
+      "#C0C0C0",
+      "#DCDCDC",
+      "#D3D3D3",
+    ];
+    let randIndex = Math.floor(Math.random() * quotes.length);
+    let randColorIndex = Math.floor(Math.random() * colors.length);
+    setRandomQuote(quotes[randIndex]);
+  };
+
+  const getRandomColor = () => {
+    const colors = [
+      "#FF0000",
+      "#00FF00",
+      "#0000FF",
+      "#FF00FF",
+      "#00FFFF",
+      "#FFFF00",
+    ];
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
+  };
+
   // NEW TASK
   const handleTaskCreate = () => {
     if (!newTask) {
@@ -186,10 +235,22 @@ const App = () => {
         setError("Failed to update task due date");
         setIsLoading(false);
       });
+
+    setDueDate(dueDate); // Update the dueDate state
   };
 
   return (
     <main>
+      {/* Render the random quote */}
+      {randomQuote && (
+        <div className="quote-container">
+          <div className="quote-text">{randomQuote.text}</div>
+          <div className="quote-author">{randomQuote.author}</div>
+        </div>
+      )}
+
+      {/* Button to get a new quote */}
+      <button onClick={handleNewQuote}>Get New Quote</button>
       <div className="task-form">
         <input
           type="text"
@@ -216,6 +277,7 @@ const App = () => {
           <div
             className={`task ${task.completed ? "completed" : ""}`}
             key={task.id}
+            style={{ "--random-color": task.color }}
           >
             <span className="task-description">{task.description}</span>{" "}
             <span>Due: {task.dueDate ? `Due: ${task.dueDate}` : ""}</span>

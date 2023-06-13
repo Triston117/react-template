@@ -3,14 +3,12 @@ body {
   background-image: linear-gradient(to bottom, #00b4db, #0083b0);
 }
 
-/* Hover effects */
-.task-form button:hover {
-  background-color: #3caea3;
+.quote-container {
+  margin-bottom: 20px;
 }
 
-/* Transition effects */
-.task {
-  transition: background-color 0.3s ease;
+.task-form {
+  margin-bottom: 20px;
 }
 
 .task.completed {
@@ -54,15 +52,11 @@ body {
 
 .delete-button {
   border: 1px solid transparent;
-  background-color: red; /* Updated color */
-  color: white; /* Updated text color */
+  background-color: red !important;
+  color: white;
   padding: 5px 10px;
   border-radius: 3px;
   transition: border-color 0.3s ease;
-}
-
-.delete-button:hover {
-  border-color: red;
 }
 
 /* Icons */
@@ -74,4 +68,73 @@ body {
   padding: 4px;
 }
 
-/* Add other icon styles as desired */
+/* New Quote Button */
+button.new-quote-button {
+  background-color: #f9a602;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Add space between button and task description */
+.task-form input[type="text"] {
+  margin-top: 10px;
+}
+
+/* Loading message */
+.loading {
+  font-style: italic;
+  color: #777777;
+}
+
+/* Error message */
+.error {
+  color: red;
+}
+
+/* Quote container */
+.quote-container {
+  margin-bottom: 20px;
+}
+
+.quote-text {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.quote-author {
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* Calendar container */
+.calendar {
+  margin-top: 10px;
+}
+
+/* Task due date */
+.task span {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--random-color);
+}
+
+/* Task priority button */
+.task button {
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+/* Task delete button */
+.task .delete-button {
+  margin-top: 10px;
+}
+
+/* Loading message */
+.loading {
+  font-style: italic;
+  color: #777777;
+}

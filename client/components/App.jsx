@@ -107,7 +107,7 @@ const App = () => {
           return task;
         });
 
-        // Move the task to the top if the priority was changed to high
+        // Move the task to the top if the priority was changed to 1 which equals high
         if (!priority) {
           const taskIndex = updatedTasks.findIndex(
             (task) => task.id === data.id
@@ -196,11 +196,13 @@ const App = () => {
           onChange={(e) => setNewTask(e.target.value)}
           placeholder="Enter task description"
         />
-        <DatePicker
-          selected={dueDate}
-          onChange={(date) => setDueDate(date)}
-          placeholderText="Select due date"
-        />
+        <div className="calendar">
+          <DatePicker
+            selected={dueDate}
+            onChange={(date) => setDueDate(date)}
+            placeholderText="Select due date"
+          />
+        </div>
         <button onClick={handleTaskCreate}>Add Task</button>
       </div>
 
@@ -215,7 +217,7 @@ const App = () => {
             key={task.id}
           >
             <span className="task-description">{task.description}</span>{" "}
-            <span>Due: {task.dueDate ? task.dueDate : ""}</span>
+            <span>Due: {task.dueDate ? `Due: ${task.dueDate}` : ""}</span>
             <div>
               <button
                 onClick={() => handleTaskPriority(task.id, !task.priority)}

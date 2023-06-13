@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { FaPlus, FaTrash, FaCheck } from "react-icons/fa";
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
@@ -8,7 +9,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [dueDate, setDueDate] = useState(null);
-
+  // Re render
   useEffect(() => {
     setIsLoading(true);
     fetch("/api/tasks")
@@ -23,7 +24,7 @@ const App = () => {
         setIsLoading(false);
       });
   }, []);
-
+  // NEW TASK
   const handleTaskCreate = () => {
     if (!newTask) {
       return;
@@ -57,7 +58,7 @@ const App = () => {
         setIsLoading(false);
       });
   };
-
+  // DELETE TASK
   const handleTaskDelete = (taskId) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this task?"
@@ -86,7 +87,7 @@ const App = () => {
   const handleTaskPriority = (taskId, priority) => {
     setIsLoading(true);
 
-    // Determine the priority value based on the current state
+    // Determine the priority value based on the current state of 1 or 2
     const priorityValue = priority ? 1 : 2;
 
     fetch(`/api/tasks/${taskId}/priority`, {
@@ -128,7 +129,7 @@ const App = () => {
         setIsLoading(false);
       });
   };
-
+  // TASK COMPLETE, CSS LINE THROUGH
   const handleTaskComplete = (taskId, completed) => {
     setIsLoading(true);
     fetch(`/api/tasks/${taskId}/completion`, {
@@ -157,7 +158,7 @@ const App = () => {
         setIsLoading(false);
       });
   };
-
+  // UGH
   const handleTaskDueDate = (taskId, dueDate) => {
     setIsLoading(true);
     fetch(`/api/tasks/${taskId}/dueDate`, {
@@ -234,7 +235,15 @@ const App = () => {
                 onChange={(date) => handleTaskDueDate(task.id, date)}
                 placeholderText="Select due date"
               />
-              <button onClick={() => handleTaskDelete(task.id)}>Delete</button>
+              <button
+                className="delete-button"
+                onClick={() => handleTaskDelete(task.id)}
+              >
+                Delete
+              </button>
+            </div>
+            <div className="floating-button" onClick={handleTaskCreate}>
+              <FaPlus />
             </div>
           </div>
         ))

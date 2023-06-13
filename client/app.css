@@ -1,72 +1,77 @@
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+/* Add background gradient */
+body {
+  background-image: linear-gradient(to bottom, #00b4db, #0083b0);
+}
+
+/* Hover effects */
+.task-form button:hover {
+  background-color: #3caea3;
+}
+
+/* Transition effects */
+.task {
+  transition: background-color 0.3s ease;
+}
+
+.task.completed {
+  background-color: #f7f7f7;
+}
+
+/* Customized task cards */
+.task {
+  border: 1px solid #dddddd;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  /* Add other customizations as desired */
+}
+
+/* Floating action button */
+.floating-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #3caea3;
+  color: #ffffff;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .completed .task-description {
   text-decoration: line-through;
 }
 
-body {
-  font-family: "Helvetica Neue", Arial, sans-serif; /* Set a calming font */
-  line-height: 1.6; /* Improve readability */
-  background-color: #f0f8ff; /* Light blue background */
+.floating-button:hover {
+  background-color: #1d7f74;
 }
 
-.main {
-  max-width: 600px; /* Limit the width of the content for better readability */
-  margin: 0 auto; /* Center the content horizontally */
-  padding: 16px; /* Add some spacing around the content */
-  background-color: #ffffff; /* White content background */
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow effect */
+.delete-button {
+  border: 1px solid transparent;
+  background-color: red; /* Updated color */
+  color: white; /* Updated text color */
+  padding: 5px 10px;
+  border-radius: 3px;
+  transition: border-color 0.3s ease;
 }
 
-.task-form input[type="text"],
-.task-form button,
+.delete-button:hover {
+  border-color: red;
+}
+
+/* Icons */
 .task button {
-  border-radius: 4px; /* Add rounded corners to input and button elements */
-  padding: 8px 16px; /* Increase padding for better button appearance */
-  background-color: #ffffff; /* White background */
-  color: #333333; /* Dark text color */
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333333;
+  padding: 4px;
 }
 
-.task {
-  border: 1px solid #dddddd; /* Light gray border */
-  background-color: #ffffff; /* White background */
-  animation: fadeIn 1s ease-in-out;
-}
-
-.task button:last-child {
-  background-color: #f44336; /* Red background */
-}
-
-.loading,
-.error {
-  margin-top: 16px; /* Add spacing between loading/error messages and tasks */
-  color: #555555; /* Dark gray text color */
-}
-
-/* Animation */
-.task button:hover {
-  background-color: #3caea3; /* Light blue background on hover */
-}
-
-.loading {
-  animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.6;
-  }
-}
+/* Add other icon styles as desired */

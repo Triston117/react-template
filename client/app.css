@@ -7,6 +7,10 @@
   }
 }
 
+.completed .task-description {
+  text-decoration: line-through;
+}
+
 body {
   font-family: "Helvetica Neue", Arial, sans-serif; /* Set a calming font */
   line-height: 1.6; /* Improve readability */

@@ -27,11 +27,11 @@ app.get("/api/tasks", (req, res) => {
 });
 
 app.post("/api/tasks", (req, res) => {
-  const { title, description, dueDate } = req.body; // Add dueDate destructuring
+  const { title, description, dueDate } = req.body;
 
   pool.query(
     "INSERT INTO tasks (title, description, due_date) VALUES ($1, $2, $3) RETURNING *",
-    [title, description, dueDate], // Include dueDate in the query parameters
+    [title, description, dueDate],
     (error, result) => {
       if (error) {
         console.error("Error executing query:", error);
@@ -64,6 +64,27 @@ app.put("/api/tasks/:id", (req, res) => {
   pool.query(
     "UPDATE tasks SET description = $1 WHERE id = $2 RETURNING *",
     [description, taskId],
+    (error, result) => {
+      if (error) {
+        console.error("Error executing query:", error);
+        res.status(500).send("Internal Server Error");
+      } else if (result.rows.length === 0) {
+        res.status(404).send("Task not found");
+      } else {
+        res.send(result.rows[0]);
+      }
+    }
+  );
+});
+
+// Update task due date
+app.patch("/api/tasks/:id/dueDate", (req, res) => {
+  const taskId = req.params.id;
+  const { dueDate } = req.body;
+
+  pool.query(
+    "UPDATE tasks SET due_date = $1 WHERE id = $2 RETURNING *",
+    [dueDate, taskId],
     (error, result) => {
       if (error) {
         console.error("Error executing query:", error);
@@ -118,6 +139,7 @@ app.patch("/api/tasks/:id/completion", (req, res) => {
     }
   );
 });
+
 app.delete("/api/tasks/:id", (req, res) => {
   const taskId = req.params.id;
   pool.query(

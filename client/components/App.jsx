@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const App = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [dueDate, setDueDate] = useState(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -27,18 +30,24 @@ const App = () => {
     }
 
     setIsLoading(true);
+    const requestBody = {
+      description: newTask,
+    };
+    if (dueDate) {
+      requestBody.dueDate = dueDate.toISOString();
+    }
+
     fetch("/api/tasks", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        description: newTask,
-      }),
+      body: JSON.stringify(requestBody),
     })
       .then((res) => res.json())
       .then((data) => {
-        setTasks([...tasks, data]);
+        const updatedTasks = [...tasks, data];
+        setTasks(updatedTasks);
         setNewTask("");
         setIsLoading(false);
       })
@@ -76,13 +85,17 @@ const App = () => {
 
   const handleTaskPriority = (taskId, priority) => {
     setIsLoading(true);
-    fetch(`/api/tasks/${taskId}`, {
+
+    // Determine the priority value based on the current state
+    const priorityValue = priority ? 1 : 2;
+
+    fetch(`/api/tasks/${taskId}/priority`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        priority: priority,
+        priority: priorityValue,
       }),
     })
       .then((res) => res.json())
@@ -93,6 +106,19 @@ const App = () => {
           }
           return task;
         });
+
+        // Move the task to the top if the priority was changed to high
+        if (!priority) {
+          const taskIndex = updatedTasks.findIndex(
+            (task) => task.id === data.id
+          );
+          if (taskIndex !== -1) {
+            const [task] = updatedTasks.splice(taskIndex, 1);
+            task.priority = 1; // Set priority to high
+            updatedTasks.unshift(task);
+          }
+        }
+
         setTasks(updatedTasks);
         setIsLoading(false);
       })
@@ -105,7 +131,7 @@ const App = () => {
 
   const handleTaskComplete = (taskId, completed) => {
     setIsLoading(true);
-    fetch(`/api/tasks/${taskId}`, {
+    fetch(`/api/tasks/${taskId}/completion`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -132,18 +158,50 @@ const App = () => {
       });
   };
 
+  const handleTaskDueDate = (taskId, dueDate) => {
+    setIsLoading(true);
+    fetch(`/api/tasks/${taskId}/dueDate`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        dueDate: dueDate ? dueDate.toISOString().split("T")[0] : null,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        const updatedTasks = tasks.map((task) => {
+          if (task.id === data.id) {
+            return { ...task, dueDate: data.dueDate };
+          }
+          return task;
+        });
+        setTasks(updatedTasks);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("ERROR", error);
+        setError("Failed to update task due date");
+        setIsLoading(false);
+      });
+  };
+
   return (
     <main>
       <div className="task-form">
         <input
           type="text"
-          placeholder="New Task"
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
+          placeholder="Enter task description"
         />
-        <button disabled={!newTask} onClick={handleTaskCreate}>
-          {isLoading ? "Creating Task..." : "Create Task"}
-        </button>
+        <DatePicker
+          selected={dueDate}
+          onChange={(date) => setDueDate(date)}
+          placeholderText="Select due date"
+        />
+        <button onClick={handleTaskCreate}>Add Task</button>
       </div>
 
       {error && <div className="error">{error}</div>}
@@ -152,8 +210,12 @@ const App = () => {
         <div className="loading">Loading tasks...</div>
       ) : (
         tasks.map((task) => (
-          <div className="task" key={task.id}>
-            <span>{task.description}</span>
+          <div
+            className={`task ${task.completed ? "completed" : ""}`}
+            key={task.id}
+          >
+            <span className="task-description">{task.description}</span>{" "}
+            <span>Due: {task.dueDate ? task.dueDate : ""}</span>
             <div>
               <button
                 onClick={() => handleTaskPriority(task.id, !task.priority)}
@@ -165,6 +227,11 @@ const App = () => {
               >
                 {task.completed ? "Mark Incomplete" : "Mark Complete"}
               </button>
+              <DatePicker
+                selected={task.dueDate ? new Date(task.dueDate) : null}
+                onChange={(date) => handleTaskDueDate(task.id, date)}
+                placeholderText="Select due date"
+              />
               <button onClick={() => handleTaskDelete(task.id)}>Delete</button>
             </div>
           </div>
